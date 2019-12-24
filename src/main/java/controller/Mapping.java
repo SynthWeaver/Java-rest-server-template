@@ -1,11 +1,12 @@
 package controller;
 
-import database.DB;
+import database.UserDB;
 import model.User;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,44 +15,52 @@ import java.util.List;
 
 @Controller
 public class Mapping {
-    private DB db = new DB();
+    private UserDB userDb = new UserDB();
 
     @ResponseBody
     @RequestMapping(value = "/create/user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createUser(@RequestBody String json) throws SQLException, ParseException {
+    public ResponseEntity<Object> createUser(@RequestBody String json) throws SQLException, ParseException {
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonUser = (JSONObject) jsonParser.parse(json);
         User user = new User(jsonUser);
 
-        db.createUser(user);
+        return userDb.createUser(user);
     }
 
     @ResponseBody
     @GetMapping("/read/user/{email}")
     public User readUser(@PathVariable("email") String email) throws SQLException{
-        return db.readUser(email);
+        return userDb.readUser(email);
     }
 
     @ResponseBody
     @GetMapping("/read/users")
     public List<User> readUsers() throws SQLException{
-        return db.readUsers();
+        return userDb.readUsers();
     }
 
     @ResponseBody
     @RequestMapping(value = "/update/user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void updateUser(@RequestBody String json) throws SQLException, ParseException {
+    public ResponseEntity<Object> updateUser(@RequestBody String json) throws Exception {
+        JSONParser jsonParser = new JSONParser();
+        JSONObject oldAndNewUserJsonArray = (JSONObject) jsonParser.parse(json);
+
+        JSONObject oldUserJson = (JSONObject) oldAndNewUserJsonArray.get("oldUser");
+        JSONObject newUserJson = (JSONObject) oldAndNewUserJsonArray.get("newUser");
+        User oldUser = new User(oldUserJson);
+        User newUser = new User(newUserJson);
+
+        return userDb.updateUser(oldUser, newUser);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/delete/user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> deleteUser(@RequestBody String json) throws Exception {
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonUser = (JSONObject) jsonParser.parse(json);
         User user = new User(jsonUser);
 
-        db.updateUser(user.getEmail(), user);
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "/delete/user/{email}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteUser(@PathVariable("email") String email) throws SQLException {
-        db.deleteUser(email);
+        return userDb.deleteUser(user);
     }
 
     @ResponseBody
@@ -61,6 +70,6 @@ public class Mapping {
         JSONObject jsonUser = (JSONObject) jsonParser.parse(json);
         User user = new User(jsonUser);
 
-        return db.login(user);
+        return userDb.login(user);
     }
 }

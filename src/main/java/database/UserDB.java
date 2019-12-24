@@ -2,6 +2,8 @@ package database;
 
 import model.User;
 import objects.Password;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DB {
+public class UserDB {
     public PreparedStatement getPreparedStatementFromQuery(String query) throws SQLException {
         Connection connection = DBConnection.connection();
         return connection.prepareStatement(query);
@@ -20,7 +22,7 @@ public class DB {
     // MAIN QUERIES
     //
 
-    public void createUser(User user) throws SQLException {
+    public ResponseEntity<Object> createUser(User user) throws SQLException {
         String query = "INSERT INTO user (email, password) VALUES (?, ?)";
 
         String hashedPassword = null;
@@ -28,7 +30,7 @@ public class DB {
             hashedPassword = Password.getSaltedHash(user.getPassword());
         } catch (Exception e) {
             e.printStackTrace();
-            return;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
 
         PreparedStatement preparedStatement = this.getPreparedStatementFromQuery(query);
@@ -36,6 +38,7 @@ public class DB {
         preparedStatement.setString(2, hashedPassword);
 
         preparedStatement.executeUpdate();
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     public User readUser(String email) throws SQLException {
@@ -65,30 +68,42 @@ public class DB {
         return users;
     }
 
-    public void updateUser(String email, User user) throws SQLException {
-        String query = "UPDATE user SET email = ?, password = ? WHERE email = ?";//todo: check password before update
+    public ResponseEntity<Object> updateUser(User oldUser, User newUser) throws Exception {
+        //validate user
+        if(!login(oldUser))  {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        String query = "UPDATE user SET email = ?, password = ? WHERE email = ?";
         PreparedStatement preparedStatement = this.getPreparedStatementFromQuery(query);
 
         String hashedPassword = null;
         try {
-            hashedPassword = Password.getSaltedHash(user.getPassword());
+            hashedPassword = Password.getSaltedHash(newUser.getPassword());
         } catch (Exception e) {
             e.printStackTrace();
-            return;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
 
-        preparedStatement.setString(1, user.getEmail());
+        preparedStatement.setString(1, newUser.getEmail());
         preparedStatement.setString(2, hashedPassword);
-        preparedStatement.setString(3, email);
+        preparedStatement.setString(3, oldUser.getEmail());
         preparedStatement.executeUpdate();
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
-    public void deleteUser(String email) throws SQLException {//todo: check password before delete
+    public ResponseEntity<Object> deleteUser(User user) throws Exception {
+        //validate user
+        if(!login(user))  {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
         String query = "DELETE FROM user WHERE email = ?";
         PreparedStatement preparedStatement = this.getPreparedStatementFromQuery(query);
 
-        preparedStatement.setString(1, email);
+        preparedStatement.setString(1, user.getEmail());
         preparedStatement.executeUpdate();
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     public boolean login(User inputUser) throws Exception {
