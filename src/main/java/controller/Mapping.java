@@ -2,8 +2,6 @@ package controller;
 
 import database.UserDB;
 import model.User;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +17,7 @@ public class Mapping {
 
     @ResponseBody
     @RequestMapping(value = "/create/user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createUser(@RequestBody String json) throws SQLException, ParseException {
-        JSONParser jsonParser = new JSONParser();
-        JSONObject jsonUser = (JSONObject) jsonParser.parse(json);
-        User user = new User(jsonUser);
-
+    public ResponseEntity<Object> createUser(@RequestBody User user) throws SQLException, ParseException {
         return userDb.createUser(user);
     }
 
@@ -41,35 +35,22 @@ public class Mapping {
 
     @ResponseBody
     @RequestMapping(value = "/update/user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> updateUser(@RequestBody String json) throws Exception {
-        JSONParser jsonParser = new JSONParser();
-        JSONObject oldAndNewUserJsonArray = (JSONObject) jsonParser.parse(json);
-
-        JSONObject oldUserJson = (JSONObject) oldAndNewUserJsonArray.get("oldUser");
-        JSONObject newUserJson = (JSONObject) oldAndNewUserJsonArray.get("newUser");
-        User oldUser = new User(oldUserJson);
-        User newUser = new User(newUserJson);
+    public ResponseEntity<Object> updateUser(@RequestBody List<User> users) throws Exception {
+        User oldUser = users.get(0);
+        User newUser = users.get(1);
 
         return userDb.updateUser(oldUser, newUser);
     }
 
     @ResponseBody
     @RequestMapping(value = "/delete/user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> deleteUser(@RequestBody String json) throws Exception {
-        JSONParser jsonParser = new JSONParser();
-        JSONObject jsonUser = (JSONObject) jsonParser.parse(json);
-        User user = new User(jsonUser);
-
+    public ResponseEntity<Object> deleteUser(@RequestBody User user) throws Exception {
         return userDb.deleteUser(user);
     }
 
     @ResponseBody
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public boolean login(@RequestBody String json) throws Exception {
-        JSONParser jsonParser = new JSONParser();
-        JSONObject jsonUser = (JSONObject) jsonParser.parse(json);
-        User user = new User(jsonUser);
-
+    public boolean login(@RequestBody User user) throws Exception {
         return userDb.login(user);
     }
 }
