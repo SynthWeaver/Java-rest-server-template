@@ -7,13 +7,6 @@
     <artifactId>gs-serving-web-content</artifactId>
     <version>0.1.0</version>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -45,22 +38,15 @@
             <version>8.0.17</version>
         </dependency>
         <dependency>
-            <groupId>com.github.TimTerwijn</groupId>
-            <artifactId>simplejava</artifactId>
-            <version>v0.1-alpha</version>
-        </dependency>
-        <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.9</version>
         </dependency>
-
     </dependencies>
 
     <properties>
         <java.version>1.8</java.version>
     </properties>
-
 
     <build>
         <plugins>
@@ -70,5 +56,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
