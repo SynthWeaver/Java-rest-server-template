@@ -1,7 +1,5 @@
 package model;
 
-import org.json.simple.JSONObject;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -12,13 +10,6 @@ public class User {
     public User(String email, String password) {
         this.email = email;
         this.password = password;
-    }
-
-    public User(JSONObject jsonUser){
-        this(
-                jsonUser.get("email").toString(),
-                jsonUser.get("password").toString()
-        );
     }
 
     public User(ResultSet rs) throws SQLException {

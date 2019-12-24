@@ -2,7 +2,6 @@ package controller;
 
 import database.UserDB;
 import model.User;
-import org.json.simple.parser.ParseException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,7 +16,7 @@ public class Mapping {
 
     @ResponseBody
     @RequestMapping(value = "/create/user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createUser(@RequestBody User user) throws SQLException, ParseException {
+    public ResponseEntity<Object> createUser(@RequestBody User user) throws SQLException {
         return userDb.createUser(user);
     }
 
