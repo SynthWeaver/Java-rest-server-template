@@ -1,5 +1,6 @@
-package database;
+package database.tabels;
 
+import database.DBMethods;
 import model.User;
 import objects.Password;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDB {
+public class UserTable {
 
     DBMethods dbMethods = new DBMethods();
 
