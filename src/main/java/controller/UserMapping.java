@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Controller
-public class Mapping {
+public class UserMapping {
     private UserDB userDb = new UserDB();
 
     @ResponseBody
