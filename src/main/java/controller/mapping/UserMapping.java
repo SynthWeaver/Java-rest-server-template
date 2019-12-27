@@ -42,7 +42,7 @@ public class UserMapping {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/delete/user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/delete/user", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE)
     public ResponseEntity<Object> deleteUser(@RequestBody User user) throws Exception {
         return userTable.deleteUser(user);
     }
